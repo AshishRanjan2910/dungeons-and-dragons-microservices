@@ -11,6 +11,12 @@ public class GameCharacterDTO {
 	
 	List<GameCharacterDTO> subClasses = new ArrayList<>();
 	
+	public GameCharacterDTO(GameCharacter gameCharacter) {
+		// TODO Auto-generated constructor stub
+	}
+	public GameCharacterDTO() {
+		// TODO Auto-generated constructor stub
+	}
 	public List<GameCharacterDTO> getSubClasses() {
 		return subClasses;
 	}

@@ -9,9 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.gamecharacter.entity.GameCharacter;
 
 @Repository
-public interface GameCharacterDao extends JpaRepository<GameCharacter, Integer>{
-	
-	@Query(value="SELECT ", nativeQuery=true)
-	public List<GameCharacter> list(GameCharacter character);
+public interface GameCharacterDao extends JpaRepository<GameCharacter, Integer>{	
+	public List<GameCharacter> findAll();
 //	Create a method to pass parentId and get List<children>
 }
