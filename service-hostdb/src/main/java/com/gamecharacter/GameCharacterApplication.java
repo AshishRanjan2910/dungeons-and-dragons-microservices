@@ -13,15 +13,15 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableSwagger2
 public class GameCharacterApplication extends SpringBootServletInitializer {
-	
+
 	@Bean
-   public Docket productApi() {
-      return new Docket(DocumentationType.SWAGGER_2).select()
-         .apis(RequestHandlerSelectors.basePackage("com.gamecharacter")).build();
-   }
-	
+	public Docket productApi() {
+		return new Docket(DocumentationType.SWAGGER_2).select()
+				.apis(RequestHandlerSelectors.basePackage("com.gamecharacter")).build();
+	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(GameCharacterApplication.class, args);
 	}
-	
+
 }

@@ -3,7 +3,6 @@ package com.gamecharacter.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,13 +11,22 @@ import org.springframework.ui.ModelMap;
 import com.gamecharacter.Repository.GameCharacterDao;
 import com.gamecharacter.entity.GameCharacter;
 import com.gamecharacter.entity.GameCharacterDTO;
+import com.gamecharacter.entity.ParentChildPairDTO;
+import com.gamecharacter.service.GameCharacterRestUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/gamecharacter")
 public class GameCharacterController {
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(GameCharacterController.class);
+	
 	@Autowired
 	private GameCharacterDao characterDao;
+	@Autowired
+	private GameCharacterRestUtil gameCharacterRestUtil;
 	
 	@PostMapping("/")
 	public ResponseEntity<String> postingData(@RequestBody GameCharacter character, ModelMap model){
@@ -27,43 +35,25 @@ public class GameCharacterController {
 	}
 	@GetMapping("/{characterId}")
 	public ResponseEntity<GameCharacterDTO> getGameCharacter(@PathVariable("characterId") Integer characterId) {
-		try{
-			GameCharacter character = characterDao.getReferenceById(characterId);
-			GameCharacterDTO dto = new GameCharacterDTO();
-			BeanUtils.copyProperties(character, dto);
-			dto.setSubClasses(this.getChilds(dto));
+		try {
+			GameCharacterDTO dto = gameCharacterRestUtil.getCharacterById(characterId);
 			return new ResponseEntity<GameCharacterDTO>(dto, HttpStatus.OK);
-		}
-		catch(Exception e) {
-			System.out.println("Error: "+e);
+		} catch(Exception e) {
+			LOGGER.error("Error: "+e);
 			return null;
 		}
-		
 	}
 	
 	@DeleteMapping("/{characterId}")
     public void deleteGameCharacter(@PathVariable("characterId") Integer characterId) {
 		characterDao.deleteById(characterId);
     }
-	
-	public List<GameCharacterDTO> getChilds(GameCharacterDTO character) {
-		return new ArrayList<>();
-	}
 
 	@GetMapping("/dndFamily")
-	public List<GameCharacterDTO> getDndFamily() {
-	    List<GameCharacter> allCharactersOfDnD = characterDao.findAll();
-	    
-	    // Create a list to store the DTOs
-	    List<GameCharacterDTO> allCharacters = new ArrayList<>();
+	public ResponseEntity<List<GameCharacterDTO>> getDndFamily() {
+		List<GameCharacterDTO> allCharacters = gameCharacterRestUtil.getDndGraph();
 
-	    // Convert GameCharacter entities to GameCharacterDTO objects
-	    for (GameCharacter gameCharacter : allCharactersOfDnD) {
-	        GameCharacterDTO gameCharacterDTO = new GameCharacterDTO(gameCharacter);
-	        allCharacters.add(gameCharacterDTO);
-	    }
-
-	    return allCharacters;
+	    return new ResponseEntity<List<GameCharacterDTO>>(allCharacters, HttpStatus.OK);
 	}
 
 }
