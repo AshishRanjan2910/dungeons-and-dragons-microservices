@@ -20,7 +20,7 @@ public class DndGraphUtil {
 	@Autowired
 	private GameCharacterRestUtil gameCharacterRestUtil;
 	
-	private GameCharacterDTO hierarchyBuilder(Map<Integer, ArrayList<Integer>> adj, int member, Queue<Integer> queue, Set<Integer> vis) {
+	private GameCharacterDTO hierarchyBuilder(Map<Integer, ArrayList<Integer>> adj, int member, Set<Integer> vis) {
 		vis.add(member);
 		
 		GameCharacterDTO currMember = gameCharacterRestUtil.getCharacterById(member);
@@ -28,7 +28,7 @@ public class DndGraphUtil {
 		
 		for (int neighbor: adj.get(member)) {
 			if (!vis.contains(neighbor)) {
-				childMembers.add(hierarchyBuilder(adj, neighbor, queue, vis));
+				childMembers.add(hierarchyBuilder(adj, neighbor, vis));
 			}
 		}
 		
@@ -56,9 +56,8 @@ public class DndGraphUtil {
 		Set<Integer> visitedMemberTracker = new HashSet<>();
 		
 		for (int memberId: adj.keySet()) {
-			Queue<Integer> queue = new LinkedList<Integer>();
 			if (!visitedMemberTracker.contains(memberId)) {
-				GameCharacterDTO topMember = hierarchyBuilder(adj, memberId, queue, visitedMemberTracker);
+				GameCharacterDTO topMember = hierarchyBuilder(adj, memberId, visitedMemberTracker);
 				dndHierarchy.add(topMember);
 			}
 		}
